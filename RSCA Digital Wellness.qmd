@@ -1,0 +1,63 @@
+---
+title: "Digital Wellness Validation"
+author: Alana Unfried
+date: last-modified
+toc: true
+number-sections: true
+format:
+  html:
+    code-fold: true
+    code-tools: true
+    code-link: true
+highlight-style: pygments
+---
+
+```{r}
+#| label: packages
+#| include: false
+
+library(tidyverse)
+library(haven)    #read in SPSS data
+library(janitor)  #variable cleaning
+library(gt)       #tables
+```
+
+## Read In Data
+
+Data file was provided via email from Jenn.
+
+```{r}
+#| include: false
+
+#note ChatGPT was used to assist the creation of this code
+
+#read in spss file using haven package
+raw_data <- read_sav("data/Copy of Digital Wellness Survey_Merged_05.29.25_JL.sav")
+
+#basic variable cleanup
+data <- raw_data %>% 
+  clean_names() # snake_case column names
+
+#preview variables
+head(data)
+```
+
+Preview of variable names
+
+```{r}
+names(data)
+```
+
+## Clean Data
+
+Filter to population, remove hasty responses, etc.
+
+```{r}
+
+#suspicious response filtering is not currently working
+
+
+data1 <- data |>
+  filter(sona == 1) |>
+  filter(suspicious_response != 1)
+```

@@ -33,6 +33,7 @@ Data file was provided via email from Jenn.
 #note ChatGPT was used to assist the creation of this code
 
 #read in spss file using haven package
+#note that SPSS value labels are labelled vectors; if you need plain, use as_factor() or zap_labels()
 raw_data <- read_sav("data/Copy of Digital Wellness Survey_Merged_05.29.25_JL.sav")
 
 #basic variable cleanup
@@ -41,6 +42,17 @@ data <- raw_data %>%
 
 #preview variables
 head(data)
+
+#variable labels
+library(labelled)
+look_for(data) |>
+  as_tibble()
+#can search for specific variables by key (also searches labels, case insensitive default)
+#look_for(raw_data, "age")
+#can just search variable names
+#look_for(data, "age", labels=FALSE) %>%
+#  as_tibble()
+
 ```
 
 Preview of variable names

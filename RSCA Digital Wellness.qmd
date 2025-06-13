@@ -20,6 +20,7 @@ library(tidyverse)
 library(haven)    #read in SPSS data
 library(janitor)  #variable cleaning
 library(gt)       #tables
+library(ggformula)#df_stats
 ```
 
 ## Read In Data
@@ -50,14 +51,48 @@ names(data)
 
 ## Clean Data
 
-Filter to population, remove hasty responses, etc.
+Filter to population, etc.
 
 ```{r}
 
-#suspicious response filtering is not currently working
+# #suspicious response filter does not remove any additional observations because all suspicious responses were for non-sona responses
+# data |>
+#   count(sona, suspicious_response)
+# 
+# #contingency table style
+# data |>
+#   count(sona, suspicious_response) |>
+#   pivot_wider(names_from = suspicious_response,
+#               values_from = n,
+#               values_fill = 0)
+  
+
+# data |>
+#   df_stats(~suspicious_response)
 
 
-data1 <- data |>
-  filter(sona == 1) |>
-  filter(suspicious_response != 1)
+#note that the filter with not equal to will by default remove missing values!!
+#so we filter to keep only when the value is missing for suspicious response
+data_1 <- data |>
+  filter(sona == 1) |> #removes 507 observations
+  filter(is.na(suspicious_response)) |> #removes no additional observations
+  filter(age >= 17, age <= 25) #filter age to emerging adulthood, removes 171 observations
+
+```
+
+### Investigate Hasty Responses
+
+```{r}
+library(careless)
+
+#create new duration in minutes
+data_1 <- data_1 |>
+  mutate(duration_m = duration_in_seconds / 60)
+
+#summary stats for duration
+data_1 |>
+  df_stats(~duration_m)
+
+data_1 |>
+  df_stats(duration_m~hasty_flag)
 ```

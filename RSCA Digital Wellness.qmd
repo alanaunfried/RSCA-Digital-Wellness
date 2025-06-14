@@ -107,4 +107,72 @@ data_1 |>
 
 data_1 |>
   df_stats(duration_m~hasty_flag)
+
+#can we look at % completed and compare to duration?
+#not a priority right now
+
+#remove responses based on hasty flag
+#We are just following what Jenn already calculated so that data cleaning in general is with her in SPSS
+data_2 <- data_1 |>
+  filter(hasty_flag == 0)  #keeps if NOT hasty; remove 28 responses
+
+```
+
+### Missing Data
+
+Investigate missing values just in the constructs. Remove any observations with too much data missing on digital wellness scale.
+
+```{r}
+#specify the variables that constitute the constructs
+constructs <- data_2 |>
+  select(c(id, social_1:sas_10)) |> #construct range + ID
+  select(!c(validity_2, validity_1, physical_health)) |> #drop those not in a construct, now 134 vars
+  mutate(n_miss = rowSums(across(social_1:sas_10, ~ is.na(.x)))) |> #calculate the number of missing values in each row
+  mutate(n_miss_dws = rowSums(across(social_1:emotional_18, ~ is.na(.x)))) #mising just on DWS
+
+#table of missing values sorted from highest to lowest. #most missing is 87 our of 134
+constructs |> 
+  select(id, n_miss:n_miss_dws) |>
+  arrange(desc(n_miss_dws))  |>
+  head()
+
+#based on this we will remove IDs 1066 and 70. Keeping the row that has missing values but fully answered the DWS
+constructs_1 <- constructs |> 
+  filter(!id %in% c(1066, 70)) 
+
+#summary of missingness after removal
+constructs_1 |> 
+  ggplot(aes(x=n_miss_dws)) +
+  geom_histogram()
+
+constructs_1 |>
+  df_stats(~n_miss_dws)
+
+constructs_1 |> 
+  ggplot(aes(x=n_miss)) +
+  geom_histogram()
+
+constructs_1 |>
+  df_stats(~n_miss)
+
+
+#remove the 2 problematic rows in the original data
+data_3 <- data_2 |> 
+  filter(!id %in% c(1066, 70))
+```
+
+### Imputation
+
+We will impute missing values just based on construct scores. But, I should revisit the MASDER data cleaning protocol to see if we imputed also on demographics.
+
+```{r}
+
+```
+
+## EDA
+
+Model after S-SOMAS Pilot 0 paper
+
+```{r}
+
 ```
